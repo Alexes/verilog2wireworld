@@ -79,7 +79,10 @@ class TileLevelWireWorldUniverse:
         return self._height
         
     def place_component(self, row, col, component):
-        ''' Should accept LPM instance objects and crossovers '''
+        ''' 
+            Accepts LPM instance objects and crossovers.
+            'row' and 'col' are in tile space.
+        '''
         comp_size = component.get_size_in_tiles()
         height = comp_size[0]
         width = comp_size[1]
