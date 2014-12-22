@@ -220,8 +220,10 @@ if (design_view == None):
 
 
 import wireworld_lpm_tile6 as lpm
+print 'Performing technology mapping to WireWorld Tile algorithm of size 6'
 print 'INSTANCES:'
 component_instances = {}
+# {name: LPM_AND_instance }
 for key in design_view['contents']['instances']:
     instance = design_view['contents']['instances'][key]
     name = instance['name'] 
@@ -236,22 +238,32 @@ for key in design_view['contents']['instances']:
     print (name + ': ' + lpm_type
         + '(SIZE=' + str(lpm_size) + ', WIDTH=' + str(lpm_width) + ')')
     
-    # actually instantiating modules
+    # instantiating modules
     instance = None
     if (lpm_type == 'LPM_AND'):
         instance = lpm.LPM_AND(name, lpm_size, lpm_width)
+    elif (lpm_type == 'LPM_OR'):
+        instance = lpm.LPM_OR(name, lpm_size, lpm_width)
     else:
         raise RuntimeError('Incorrect or unimplemented type: ' + lpm_type)
     component_instances[name] = instance
     
 print 'NETS:'
+nets = {}
+# {name: [('U1', 'Data0x0'), ('U2', 'Result0')]}
 for key in design_view['contents']['nets']:
     net = design_view['contents']['nets'][key]
-    print net['name']+':', 
+    net_name = net['name']
+    nets[net_name] = []
+    print net_name +':', 
     for i in range(len(net['joined_ports'])):
-        print str(net['joined_ports'][i]['instance']) + '.' + net['joined_ports'][i]['portname'], 
+        inst_name = str(net['joined_ports'][i]['instance'])
+        inst_port = net['joined_ports'][i]['portname']
+        nets[net_name].append( (inst_name, inst_port) )
+        print inst_name + '.' + inst_port, 
         if (i < len(net['joined_ports']) - 1): print '-',
     print
+    
     
     
 print 'Placing components...'
@@ -269,13 +281,18 @@ for inst_name in component_instances:
     row = int(cursor / slots_per_row) * 9 + 3
     col = int(cursor % slots_per_row) * 9 + 3
     tile_field.place_component(row = row, col = col, component = inst)
+    inst.set_pos_in_tiles(row = row, col = col)
     cursor += 1
 
-cell_field = tile_field.write_cell_level_universe(instances_dict = component_instances)
+print 'Routing nets...'
+import routing
+routing.do_routing(tile_field, nets, component_instances)
 
-print 'Writing RLE'
+print 'Writing RLE...'
 import os
 import rle_writer as rle
+# converting tile-level universe into cell-level universe
+cell_field = tile_field.write_cell_level_universe(instances_dict = component_instances)
 # preparing RLE filename and path
 directory, edif_filename = os.path.split(edif_file_path)
 filename, ext = os.path.splitext(edif_filename)

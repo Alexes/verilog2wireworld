@@ -7,6 +7,8 @@
     and necessary transition from it to the CA cell-level which can then be written to RLE.
 '''
 
+import wireworld_wires_library_tile6 as wires
+
 class WireWorldUniverse:
     _field = []
     _width = 0
@@ -128,7 +130,10 @@ class TileLevelWireWorldUniverse:
                 if (tile == ' '):
                     continue
                 if (tile == 'C'):
-                    print 'Conductors are not currently supported... but they should be, really'
+                    pos_row = r * TILE_SIZE
+                    pos_col = c * TILE_SIZE
+                    pattern = wires.get_horizontal_wire_pattern()
+                    ww.write_pattern(pos_row, pos_col, pattern)
                     continue
                 if (tile not in written_instances):
                     instance = instances_dict[tile]
