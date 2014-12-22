@@ -26,10 +26,29 @@ class LPM_AND:
     
     _LPM_instance_name = ''
     
+    _tile_pos_row = 0   # position of the current instance in tile-space
+    _tile_pos_col = 0
+    
     def __init__(self, instance_name, LPM_SIZE, LPM_WIDTH):
         self._LPM_instance_name = instance_name
         if (LPM_SIZE != 2 or LPM_WIDTH != 1):
             raise RuntimeError('Currently LPM_AND supports only LPM_SIZE=2 and LPM_WIDTH=1')
+    
+    def set_pos_in_tiles(self, row, col):
+        ''' 
+            Set position of the instance in tile space.
+            The position may be changed any number of times,
+            in case of multiple re-placement operations, for example.
+        '''
+        self._tile_pos_row = row
+        self._tile_pos_col = col
+    
+    def get_pos_in_tiles(self):
+        ''' 
+            Return position of the instance in tile space.
+            Returns tuple (row, col)
+        '''
+        return (self._tile_pos_row, self._tile_pos_col)
     
     def get_pattern(self):
         return self._pattern
@@ -85,10 +104,29 @@ class LPM_OR:
     
     _LPM_instance_name = ''
     
+    _tile_pos_row = 0   # position of the current instance in tile-space
+    _tile_pos_col = 0
+    
     def __init__(self, instance_name, LPM_SIZE, LPM_WIDTH):
         self._LPM_instance_name = instance_name
         if (LPM_SIZE != 2 or LPM_WIDTH != 1):
             raise RuntimeError('Currently LPM_OR supports only LPM_SIZE=2 and LPM_WIDTH=1')
+    
+    def set_pos_in_tiles(self, row, col):
+        ''' 
+            Set position of the instance in tile space.
+            The position may be changed any number of times,
+            in case of multiple re-placement operations, for example.
+        '''
+        self._tile_pos_row = row
+        self._tile_pos_col = col
+    
+    def get_pos_in_tiles(self):
+        ''' 
+            Return position of the instance in tile space.
+            Returns tuple (row, col)
+        '''
+        return (self._tile_pos_row, self._tile_pos_col)
     
     def get_pattern(self):
         return self._pattern
