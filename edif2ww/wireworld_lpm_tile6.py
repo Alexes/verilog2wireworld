@@ -76,11 +76,11 @@ class LPM_AND:
     def get_port_local_tile_pos(self, port):
         ''' Ports' locations are given in 6-tiles coordinate space local to pattern '''
         if (port == 'Data0x0'):
-            return (0, 0)
+            return (0, 0-1)
         elif (port == 'Data1x0'):
-            return (1, 0)
+            return (1, 0-1)
         elif (port == 'Result0'):
-            return (1, 2)
+            return (1, 2+1)
             
     def get_name(self):
         return self._LPM_instance_name
@@ -156,13 +156,20 @@ class LPM_OR:
             return (3, 5)
             
     def get_port_local_tile_pos(self, port):
-        ''' Ports' locations are given in 6-tiles coordinate space local to pattern '''
+        ''' 
+            Ports' locations are given in 6-tiles coordinate space 
+            outside of the pattern.
+            This method returns not the position of the port inside the pattern,
+            but rather a location outside of it to which router
+            should bring a wire. This allows gates to designate
+            specific directions from which wires may connect to their ports.
+        '''
         if (port == 'Data0x0'):
-            return (0, 0)
+            return (0, 0-1)
         elif (port == 'Data1x0'):
-            return (1, 0)
+            return (1, 0-1)
         elif (port == 'Result0'):
-            return (0, 0)
+            return (0, 0+1)
             
     def get_name(self):
         return self._LPM_instance_name
