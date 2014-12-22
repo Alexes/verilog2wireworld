@@ -54,11 +54,12 @@ class TileLevelWireWorldUniverse:
     def __init__(self, width, height):
         '''
             width, height - in tiles of size 6x6 CA cells.
-            Field cell states may be one of:
+            Tile states may be one of:
             SPACE - empty 
             LPM instance name - if it occupies the tile. One instance usually takes up several tiles
             Crossover instance name - usually takes up several tiles as well
             C - conductor
+            
             These, actually, are more like labels, not states.
             For, example, a LPM_AND gate of tile size 6 has dimensions of 2x3 tiles.
             On Tile-level field, it occupies 6 cells; each cell contains
@@ -71,7 +72,13 @@ class TileLevelWireWorldUniverse:
             self._field.append([' '] * width)
         self._width = width
         self._height = height
-        
+      
+    def get(self, row, col):
+        '''
+            Returns tile state at (row, col)
+        '''
+        return self._field[row][col]
+      
     def get_width(self):
         return self._width
         
@@ -93,7 +100,15 @@ class TileLevelWireWorldUniverse:
                     self._field[r + row][c + col] = instance_name
                 else:
                     raise RuntimeError('Tile level of abstraction: component overlap detected.')
-                    
+          
+    def place_conductor(self, row, col):
+        '''
+            Places one WireWorld conductor tile at specified location.
+        '''
+        if (self._field[row][col] != ' '):
+            raise RuntimeError('Tile level of abstraction: wire drawn over something with label: ' + self._field[row][col])
+        self._field[row][col] = 'C'
+          
     def write_cell_level_universe(self, instances_dict):
         '''
             Writes CA cell level WireWorld field.
