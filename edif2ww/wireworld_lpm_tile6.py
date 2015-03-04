@@ -16,11 +16,11 @@ class LPM_AND:
         '        CCC       ',
         '     C C   C      ',
         '    CCC    C      ',
-        '   C C C C C      ',
-        '   C    CCC  C   C',
-        '    C    C CC C C ',
-        'CCC C         C C ',
-        '   C           C  ',
+        '   C C C C C   C  ',
+        '   C    CCC   C C ',
+        '    C    C C  C  C',
+        'CCC C       C C   ',
+        '   C         C    ',
         '                  '
     ]
     
@@ -71,7 +71,7 @@ class LPM_AND:
         elif (port == 'Data1x0'):
             return (9, 0)
         elif (port == 'Result0'):
-            return (7, 17)
+            return (8, 17)
             
     def get_port_local_tile_pos(self, port):
         ''' 
