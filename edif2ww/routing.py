@@ -20,10 +20,10 @@ def do_routing(tile_field, nets, instances):
         if (net[0][0] == 'None' or net[1][0] == 'None'):
             print 'TODO: currently not routing design ports'
             continue
-        wave_route_wire(tile_field, instances, nets[net_name])
+        wave_route_wire(tile_field, instances, net_name, nets[net_name])
         
         
-def wave_route_wire(fld, instances, net):
+def wave_route_wire(fld, instances, net_name, net):
     '''
         Performs Wave propagation algorithm
         and draws a WireWorld conductor wire between
@@ -84,7 +84,7 @@ def wave_route_wire(fld, instances, net):
         cur = dest
         while True:
             # drawing conductor
-            fld.place_conductor(cur[0], cur[1])
+            fld.place_conductor(cur[0], cur[1], net_name)
             
             # check if we reached the start
             if (cur[0] == start[0] and cur[1] == start[1]):

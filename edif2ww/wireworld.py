@@ -60,7 +60,7 @@ class TileLevelWireWorldUniverse:
             SPACE - empty 
             LPM instance name - if it occupies the tile. One instance usually takes up several tiles
             Crossover instance name - usually takes up several tiles as well
-            C - conductor
+            ('C', net_name) - conductor (and the net of which it is a part)
             
             These, actually, are more like labels, not states.
             For, example, a LPM_AND gate of tile size 6 has dimensions of 2x3 tiles.
@@ -103,15 +103,16 @@ class TileLevelWireWorldUniverse:
                 else:
                     raise RuntimeError('Tile level of abstraction: component overlap detected.')
           
-    def place_conductor(self, row, col):
+    def place_conductor(self, row, col, net_name):
         '''
             Places one WireWorld conductor tile at specified location.
+            net_name - net of which this conductor cell is a part
         '''
         if (self._field[row][col] != ' '):
             raise RuntimeError('Tile level of abstraction: wire drawn over something with label: ' + self._field[row][col])
-        self._field[row][col] = 'C'
+        self._field[row][col] = ('C', net_name)
           
-    def write_cell_level_universe(self, instances_dict):
+    def write_cell_level_universe(self, instances_dict, nets_dict):
         '''
             Writes CA cell level WireWorld field.
             Requires a list of instantiated LPM cells and crossovers,
@@ -129,10 +130,39 @@ class TileLevelWireWorldUniverse:
                 tile = self._field[r][c]
                 if (tile == ' '):
                     continue
-                if (tile == 'C'):
+                if (isinstance(tile, tuple) and tile[0] == 'C'):
                     pos_row = r * TILE_SIZE
                     pos_col = c * TILE_SIZE
-                    pattern = wires.get_horizontal_wire_pattern()
+                    
+                    # determining the wire direction
+                    # finding two neighbors with identical net_name, current piece of wire should connect to them 
+                    net_name = tile[1]
+                    dir = ''
+                    if (r-1 >= 0 and isinstance(self._field[r-1][c], tuple) and self._field[r-1][c][0] == 'C' and self._field[r-1][c][1] == net_name):
+                        dir += 'N'
+                    if (c+1 < self._width and isinstance(self._field[r][c+1], tuple) and self._field[r][c+1][0] == 'C' and self._field[r][c+1][1] == net_name):
+                        dir += 'E'
+                    if (r+1 < self._height and isinstance(self._field[r+1][c], tuple) and self._field[r+1][c][0] == 'C' and self._field[r+1][c][1] == net_name):
+                        dir += 'S'
+                    if (c-1 >= 0 and isinstance(self._field[r][c-1], tuple) and self._field[r][c-1][0] == 'C' and self._field[r][c-1][1] == net_name):
+                        dir += 'W'
+                    
+                    if (len(dir) == 1):
+                        # current piece of wire connects to instance port
+                        net = nets_dict[net_name]
+                        instance_names = [x[0] for x in net]
+                        if (r-1 >= 0 and self._field[r-1][c] in instance_names):
+                            dir += 'N'
+                        if (c+1 < self._width and self._field[r][c+1] in instance_names):
+                            dir += 'E'
+                        if (r+1 < self._height and self._field[r+1][c] in instance_names):
+                            dir += 'S'
+                        if (c-1 >= 0 and self._field[r][c-1] in instance_names):
+                            dir += 'W'
+                        
+                    
+                    # writing pattern
+                    pattern = wires.get_wire_pattern(dir)
                     ww.write_pattern(pos_row, pos_col, pattern)
                     continue
                 if (tile not in written_instances):

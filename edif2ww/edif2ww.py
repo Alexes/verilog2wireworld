@@ -292,7 +292,7 @@ print 'Writing RLE...'
 import os
 import rle_writer as rle
 # converting tile-level universe into cell-level universe
-cell_field = tile_field.write_cell_level_universe(instances_dict = component_instances)
+cell_field = tile_field.write_cell_level_universe(instances_dict = component_instances, nets_dict = nets)
 # preparing RLE filename and path
 directory, edif_filename = os.path.split(edif_file_path)
 filename, ext = os.path.splitext(edif_filename)
