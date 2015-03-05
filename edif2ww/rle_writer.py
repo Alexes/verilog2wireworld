@@ -7,9 +7,15 @@
 '''
     In Extended RLE file, these symbols are used for WireWorld states:
     . empty
-    A electron tail
-    B electron head
+    A electron head
+    B electron tail
     C copper wire
+    
+    !!! !!!!!!
+    At first I thought that the mapping is
+    A = tail, B = head
+    but it turned out to be the other way. WTF?
+    !!! !!!!!!
     
     File should start with dimensions info, which may be left inaccurate
     when opening file from disc with Golly. Dims are only needed when pasting.
@@ -44,9 +50,9 @@ def write_rle(filename, pattern):
             if (c == ' '):
                 output_line += '.'
             elif (c == 'H'):
-                output_line += 'B'
-            elif (c == 'T'):
                 output_line += 'A'
+            elif (c == 'T'):
+                output_line += 'B'
             elif (c == 'C'):
                 output_line += 'C'
         output_line += '$\n'
