@@ -180,3 +180,87 @@ class LPM_OR:
             
     def get_name(self):
         return self._LPM_instance_name
+
+class LPM_INV:
+    _pattern = [
+        '      ',
+        '      ',
+        ' C CCC',
+        'CCC   ',
+        ' C C  ',
+        '   C  ',
+        '  C H ',
+        '  C T ',
+        '   C  ',
+        '      ',
+        '      ',
+        '      '
+    ]
+    
+    _LPM_instance_name = ''
+    
+    _tile_pos_row = 0   # position of the current instance in tile-space
+    _tile_pos_col = 0
+    
+    def __init__(self, instance_name, LPM_SIZE, LPM_WIDTH):
+        self._LPM_instance_name = instance_name
+        if (LPM_SIZE != 1 or LPM_WIDTH != 1):
+            raise RuntimeError('Currently LPM_INV supports only LPM_SIZE=1 and LPM_WIDTH=1')
+    
+    def set_pos_in_tiles(self, row, col):
+        ''' 
+            Set position of the instance in tile space.
+            The position may be changed any number of times,
+            in case of multiple re-placement operations, for example.
+        '''
+        self._tile_pos_row = row
+        self._tile_pos_col = col
+    
+    def get_pos_in_tiles(self):
+        ''' 
+            Return position of the instance in tile space.
+            Returns tuple (row, col)
+        '''
+        return (self._tile_pos_row, self._tile_pos_col)
+    
+    def get_pattern(self):
+        return self._pattern
+        
+    def get_delay(self):
+        ''' ... in WW generations '''
+        return 6
+        
+    def get_size_in_tiles(self):
+        ''' Tiles of size 6. Returns tuple (height, width) '''
+        return (2, 1)
+        
+    def get_size_in_cells(self):
+        ''' Returns tuple (height, width) '''
+        return (12, 6)
+        
+    def get_port_local_pos(self, port):
+        ''' 
+            Ports' locations are given in WW cell coordinate space inside gate pattern. 
+            Returns tuple (row, col), 0-based.
+        '''
+        if (port == 'Data'):
+            return (3, 0)
+        elif (port == 'Result'):
+            return (2, 5)
+            
+    def get_port_local_tile_pos(self, port):
+        ''' 
+            Ports' locations are given in 6-tiles coordinate space 
+            outside of the pattern.
+            This method returns not the position of the port inside the pattern,
+            but rather a location outside of it to which router
+            should bring a wire. This allows gates to designate
+            specific directions from which wires may connect to their ports.
+        '''
+        if (port == 'Data'):
+            return (0, 0-1)
+        elif (port == 'Result'):
+            return (0, 0+1)
+            
+    def get_name(self):
+        return self._LPM_instance_name
