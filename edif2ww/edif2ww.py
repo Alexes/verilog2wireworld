@@ -251,7 +251,10 @@ for key in design_view['contents']['instances']:
     component_instances[name] = instance
     
 print 'NETS:'
+import wireworld_wires_library_tile6 as wiring
 nets = {}
+input_port_instance_names = [] # these hold names of the 'instances' representing module's input and output ports
+output_port_instance_names = []
 # {name: [('U1', 'Data0x0'), ('U2', 'Result0')]}
 for key in design_view['contents']['nets']:
     net = design_view['contents']['nets'][key]
@@ -261,6 +264,17 @@ for key in design_view['contents']['nets']:
     for i in range(len(net['joined_ports'])):
         inst_name = str(net['joined_ports'][i]['instance'])
         inst_port = net['joined_ports'][i]['portname']
+        
+        if (inst_name == 'None'): # create a separate special instance for each of the module's input and output port
+            dir = edif['libraries'][design_library]['cells'][design_cell]['views']['net']['interface']['ports'][inst_port]['direction']
+            inst_name = 'MODULE_' + dir + '_' + inst_port
+            port_inst = wiring.MODULE_PORT(inst_name, dir)
+            component_instances[inst_name] = port_inst
+            if (dir == 'INPUT'):
+                input_port_instance_names.append(inst_name)
+            elif (dir == 'OUTPUT'):
+                output_port_instance_names.append(inst_name)
+        
         nets[net_name].append( (inst_name, inst_port) )
         print inst_name + '.' + inst_port, 
         if (i < len(net['joined_ports']) - 1): print '-',
@@ -268,26 +282,14 @@ for key in design_view['contents']['nets']:
     
     
     
-print 'Placing components...'
-import wireworld as ww
-import wireworld_lpm_tile6 as lpm
+print 'Placing...'
+import placement
+tile_field = placement.do_placement(component_instances, nets, input_port_instance_names)
+    
 
-width = len(component_instances) * 9 # will make it wiser, I promise
-height = width
-tile_field = ww.TileLevelWireWorldUniverse(width = width, height = height)
-
-cursor = 0
-slots_per_row = len(component_instances)
-for inst_name in component_instances:
-    inst = component_instances[inst_name]
-    row = int(cursor / slots_per_row) * 9 + 3
-    col = int(cursor % slots_per_row) * 9 + 3
-    tile_field.place_component(row = row, col = col, component = inst)
-    inst.set_pos_in_tiles(row = row, col = col)
-    cursor += 1
-
-print 'Routing nets...'
+print 'Routing...'
 import routing
+# Router accepts Tile field with components already placed
 routing.do_routing(tile_field, nets, component_instances)
 
 print 'Writing RLE...'

@@ -92,6 +92,17 @@ class LPM_AND:
     def get_name(self):
         return self._LPM_instance_name
         
+    def get_fan_in_count(self):
+        return 2
+        
+    def get_input_port_names(self):
+        return ['Data0x0', 'Data1x0']
+        
+    def get_fan_out_count(self):
+        return 1
+        
+    def get_output_port_names(self):
+        return ['Result0']
     
 class LPM_OR:
     _pattern = [
@@ -180,6 +191,18 @@ class LPM_OR:
             
     def get_name(self):
         return self._LPM_instance_name
+        
+    def get_fan_in_count(self):
+        return 2
+        
+    def get_input_port_names(self):
+        return ['Data0x0', 'Data1x0']
+        
+    def get_fan_out_count(self):
+        return 1
+        
+    def get_output_port_names(self):
+        return ['Result0']
 
 class LPM_INV:
     _pattern = [
@@ -264,3 +287,15 @@ class LPM_INV:
             
     def get_name(self):
         return self._LPM_instance_name
+        
+    def get_fan_in_count(self):
+        return 1
+        
+    def get_input_port_names(self):
+        return ['Data']
+        
+    def get_fan_out_count(self):
+        return 1
+        
+    def get_output_port_names(self):
+        return ['Result']
