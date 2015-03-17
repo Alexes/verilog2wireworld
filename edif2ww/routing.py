@@ -37,6 +37,7 @@ def wave_route_wire(fld, instances, net_name, net):
     inst_a_pos = inst_a.get_pos_in_tiles()
     port_a_local_pos = inst_a.get_port_local_tile_pos(inst_a_port_name)
     port_a_global_pos = _add_coords( inst_a_pos, port_a_local_pos )
+    port_a_full_name = inst_a_name + '.' + inst_a_port_name
     
     inst_b_name = net[1][0]
     inst_b = instances[inst_b_name]
@@ -44,10 +45,20 @@ def wave_route_wire(fld, instances, net_name, net):
     inst_b_pos = inst_b.get_pos_in_tiles()
     port_b_local_pos = inst_b.get_port_local_tile_pos(inst_b_port_name)
     port_b_global_pos = _add_coords( inst_b_pos, port_b_local_pos )
+    port_b_full_name = inst_b_name + '.' + inst_b_port_name
+    
+    ## passable labels for this net
+    passable_tile_labels = [' ', port_a_full_name, port_b_full_name]
     
     ## starting wave algo
     start = port_a_global_pos
     dest = port_b_global_pos
+    if (fld.get(start[0], start[1]) not in passable_tile_labels):
+        print 'Routing error - one of the terminals of net "' + net_name + '" is occupied by something with label "' + str(fld.get(start[0], start[1])) + '". Cannot route it.'
+        return
+    if (fld.get(dest[0], dest[1]) not in passable_tile_labels):
+        print 'Routing error - one of the terminals of net "' + net_name + '" is occupied by something with label "' + str(fld.get(dest[0], dest[1])) + '". Cannot route it.'
+        return
     
     # creating a copy of the field to store distances (should move this out of this function)
     UNVISITED = -1
@@ -71,7 +82,7 @@ def wave_route_wire(fld, instances, net_name, net):
             break
             
         # get passable unvisited neighbors
-        neighs = _get_passable_neighs(fld, cur[0], cur[1])
+        neighs = _get_passable_neighs(fld, cur[0], cur[1], passable_tile_labels)
         unvisited_neighs = [n for n in neighs if dist[n[0]][n[1]] == UNVISITED]
         
         # expand the wave
@@ -92,23 +103,30 @@ def wave_route_wire(fld, instances, net_name, net):
             
             # deciding where to go next
             cur_dist = dist[cur[0]][cur[1]]
-            neighs = _get_passable_neighs(fld, cur[0], cur[1]) # TODO maybe remove passability condition?
+            neighs = _get_passable_neighs(fld, cur[0], cur[1], passable_tile_labels) # TODO maybe remove passability condition?
             predating_neighs = [n for n in neighs if dist[n[0]][n[1]] == cur_dist-1]
-            cur = predating_neighs[0]
+            if (len(predating_neighs) == 0):
+                print 'Routing error - one of the net terminals is occupied by something'
+                break
+            else:
+                cur = predating_neighs[0]
             
-def _get_passable_neighs(fld, row, col):
+def _get_passable_neighs(fld, row, col, passable_tile_labels):
     '''
         Returns a list of tuples with coords of
         passable von Neumann neighbors.
+        
+        Net port names are needed so that components' port connection locations can be made
+        passable for the currently created route.
     '''
     neighs = []
-    if (row > 0 and fld.get(row-1, col) == ' '):
+    if (row > 0 and fld.get(row-1, col) in passable_tile_labels):
         neighs.append( (row-1, col) )
-    if (col > 0 and fld.get(row, col-1) == ' '):
+    if (col > 0 and fld.get(row, col-1) in passable_tile_labels):
         neighs.append( (row, col-1) )
-    if (row < fld.get_height()-1 and fld.get(row+1, col) == ' '):
+    if (row < fld.get_height()-1 and fld.get(row+1, col) in passable_tile_labels):
         neighs.append( (row+1, col) )
-    if (col < fld.get_width()-1 and fld.get(row, col+1) == ' '):
+    if (col < fld.get_width()-1 and fld.get(row, col+1) in passable_tile_labels):
         neighs.append( (row, col+1) )
     return neighs
     

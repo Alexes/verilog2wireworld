@@ -100,13 +100,33 @@ def get_wire_pattern(dir):
 class MODULE_PORT:
    
     _instance_name = ''
+    _port_name = ''
     _direction = ''
+    
+    _pattern_input = [
+        'C  C        ',
+        ' C  C       ',
+        '  C  C   CC ',
+        '  C  C  C  H',
+        ' C  C    CT ',
+        'C  C        '
+    ]
+    
+    _pattern_output = [
+        '      C  C  ',
+        '       C  C ',
+        '        C  C',
+        'CCCCCC  C  C',
+        '       C  C ',
+        '      C  C  '
+    ]
     
     _tile_pos_row = 0   # position of the current instance in tile-space
     _tile_pos_col = 0
     
-    def __init__(self, instance_name, direction):
+    def __init__(self, instance_name, port_name, direction):
         self._instance_name = instance_name
+        self._port_name = port_name
         self._direction = direction
     
     def set_pos_in_tiles(self, row, col):
@@ -126,15 +146,20 @@ class MODULE_PORT:
         return (self._tile_pos_row, self._tile_pos_col)
     
     def get_pattern(self):
-        return ['CCCCCC','CCCCCC','CCCCCC','CCCCCC','CCCCCC','CCCCCC']
+        if (self._direction == 'INPUT'):
+            return self._pattern_input
+        elif (self._direction == 'OUTPUT'):
+            return self._pattern_output
+        else:
+            return self._pattern_output
         
     def get_size_in_tiles(self):
         ''' Tiles of size 6. Returns tuple (height, width) '''
-        return (1, 1)
+        return (1, 2)
         
     def get_size_in_cells(self):
         ''' Returns tuple (height, width) '''
-        return (6, 6)
+        return (6, 12)
         
     def get_port_local_pos(self, port):
         ''' 
@@ -153,7 +178,7 @@ class MODULE_PORT:
             specific directions from which wires may connect to their ports.
         '''
         if (self._direction == 'INPUT'):
-            return (0, 0+1)
+            return (0, 0+2)
         elif (self._direction == 'OUTPUT'):
             return (0, 0-1)
         else:
@@ -165,3 +190,14 @@ class MODULE_PORT:
     def get_fan_in_count(self):
         return 1
         
+    def get_input_port_names(self):
+        if (self._direction == 'INPUT'):
+            return [self._port_name]
+        else:
+            return []
+    
+    def get_output_port_names(self):
+        if (self._direction == 'OUTPUT'):
+            return [self._port_name]
+        else:
+            return []

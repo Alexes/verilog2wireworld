@@ -92,6 +92,7 @@ class TileLevelWireWorldUniverse:
             Accepts LPM instance objects and crossovers.
             'row' and 'col' are in tile space.
         '''
+        # draw component
         comp_size = component.get_size_in_tiles()
         height = comp_size[0]
         width = comp_size[1]
@@ -102,6 +103,20 @@ class TileLevelWireWorldUniverse:
                     self._field[r + row][c + col] = instance_name
                 else:
                     raise RuntimeError('Tile level of abstraction: component overlap detected.')
+        
+        # draw component port connection locations
+        input_ports = component.get_input_port_names()
+        output_ports = component.get_output_port_names()
+        ports = input_ports + output_ports
+        for port_name in ports:
+            port_row, port_col = component.get_port_local_tile_pos(port_name)
+            label = instance_name + '.' + port_name
+            if (self._field[port_row + row][port_col + col] == ' '):
+                self._field[port_row + row][port_col + col] = label
+            else:
+                raise RuntimeError('Tile level of abstraction: component overlap detected. Outside port location overlaps something')
+            
+            
           
     def place_conductor(self, row, col, net_name):
         '''
@@ -109,7 +124,8 @@ class TileLevelWireWorldUniverse:
             net_name - net of which this conductor cell is a part
         '''
         if (self._field[row][col] != ' '):
-            raise RuntimeError('Tile level of abstraction: wire drawn over something with label: ' + self._field[row][col])
+            #raise RuntimeError('Tile level of abstraction: wire drawn over something with label: ' + str(self._field[row][col]))
+            print 'Tile level of abstraction: wire drawn over something with label: ' + str(self._field[row][col])
         self._field[row][col] = ('C', net_name)
           
     def write_cell_level_universe(self, instances_dict, nets_dict):
@@ -130,7 +146,7 @@ class TileLevelWireWorldUniverse:
                 tile = self._field[r][c]
                 if (tile == ' '):
                     continue
-                if (isinstance(tile, tuple) and tile[0] == 'C'):
+                elif (isinstance(tile, tuple) and tile[0] == 'C'): # conductor
                     pos_row = r * TILE_SIZE
                     pos_col = c * TILE_SIZE
                     
@@ -165,14 +181,18 @@ class TileLevelWireWorldUniverse:
                     pattern = wires.get_wire_pattern(dir)
                     ww.write_pattern(pos_row, pos_col, pattern)
                     continue
-                if (tile not in written_instances):
+                elif (tile in instances_dict): # component instance
+                    if (tile in written_instances):
+                        continue
                     instance = instances_dict[tile]
                     pattern = instance.get_pattern()
                     pos_row = r * TILE_SIZE
                     pos_col = c * TILE_SIZE
                     ww.write_pattern(pos_row, pos_col, pattern)
                     
-                    written_instances[tile] = True # the presense is important, not the value
+                    written_instances[tile] = True # the fact of the presense is important, not the value
+                else:
+                    print 'Tile to Cell conversion error: do not know what to draw for label "' + tile + '"'
                 
         return ww
         

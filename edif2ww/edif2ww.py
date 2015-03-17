@@ -268,7 +268,7 @@ for key in design_view['contents']['nets']:
         if (inst_name == 'None'): # create a separate special instance for each of the module's input and output port
             dir = edif['libraries'][design_library]['cells'][design_cell]['views']['net']['interface']['ports'][inst_port]['direction']
             inst_name = 'MODULE_' + dir + '_' + inst_port
-            port_inst = wiring.MODULE_PORT(inst_name, dir)
+            port_inst = wiring.MODULE_PORT(inst_name, inst_port, dir)
             component_instances[inst_name] = port_inst
             if (dir == 'INPUT'):
                 input_port_instance_names.append(inst_name)
