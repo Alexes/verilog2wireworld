@@ -17,9 +17,6 @@ def do_routing(tile_field, nets, instances):
         net = nets[net_name]
         if (len(net) != 2):
             raise RuntimeError('Routing error: currently only 2-terminal nets are supported')
-        if (net[0][0] == 'None' or net[1][0] == 'None'):
-            print 'TODO: currently not routing design ports'
-            continue
         wave_route_wire(tile_field, instances, net_name, nets[net_name])
         
         
