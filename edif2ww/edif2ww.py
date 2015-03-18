@@ -246,6 +246,8 @@ for key in design_view['contents']['instances']:
         instance = lpm.LPM_OR(name, lpm_size, lpm_width)
     elif (lpm_type == 'LPM_INV'):
         instance = lpm.LPM_INV(name, lpm_size, lpm_width)
+    elif (lpm_type == 'LPM_XOR'):
+        instance = lpm.LPM_XOR(name, lpm_size, lpm_width)
     else:
         raise RuntimeError('Incorrect or unimplemented type: ' + lpm_type)
     component_instances[name] = instance
