@@ -282,6 +282,12 @@ for key in design_view['contents']['nets']:
         if (i < len(net['joined_ports']) - 1): print '-',
     print
     
+   
+print 'Splitting multiterminal nets into 2-terminals...'
+import net_splitter
+nets = net_splitter.split_multiterminal_nets(nets, component_instances)
+print nets    
+print component_instances
     
     
 print 'Placing...'
