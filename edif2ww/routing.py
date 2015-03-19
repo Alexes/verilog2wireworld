@@ -5,7 +5,7 @@
 
 #import wireworld as ww # what about multiple import?
 
-def do_routing(tile_field, nets, instances):
+def do_cascade_routing(tile_field, nets, instances, cascades):
     '''
         tile_field - wireworld.TileLevelWireWorldUniverse instance (need to import?)
         nets - dict of nets as their names as keys
@@ -13,13 +13,35 @@ def do_routing(tile_field, nets, instances):
         
         Function performs operations on tile_field in place.
     '''
+    # divide nets into cascades as well
+    net_cascades = []
+    for cascade in cascades:
+        net_cascade = []
+        for inst_name in cascade:
+            net_cascade += _find_incoming_nets(nets, instances[inst_name])
+        net_cascades.append(list(net_cascade))
+    
+    # route nets according to the order
+    for net_cascade in net_cascades:
+        for net_name in net_cascade:
+            net = nets[net_name]
+            if (len(net) != 2):
+                raise RuntimeError('Routing error: currently only 2-terminal nets are supported')
+            wave_route_wire(tile_field, instances, net_name, nets[net_name])
+        
+def _find_incoming_nets(nets, inst):
+    result = []
+    input_port_names = inst.get_input_port_names()
+    inst_name = inst.get_name()
+    
     for net_name in nets:
         net = nets[net_name]
-        if (len(net) != 2):
-            raise RuntimeError('Routing error: currently only 2-terminal nets are supported')
-        wave_route_wire(tile_field, instances, net_name, nets[net_name])
-        
-        
+        for endpoint in net:
+            if (endpoint[0] == inst_name and endpoint[1] in input_port_names):
+                result.append(net_name)
+    
+    return result
+
 def wave_route_wire(fld, instances, net_name, net):
     '''
         Performs Wave propagation algorithm

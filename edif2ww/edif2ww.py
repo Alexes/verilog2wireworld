@@ -292,13 +292,12 @@ print component_instances
     
 print 'Placing...'
 import placement
-tile_field = placement.do_placement(component_instances, nets, input_port_instance_names)
-    
+tile_field, cascades = placement.do_cascade_placement(component_instances, nets, input_port_instance_names)
 
 print 'Routing...'
 import routing
 # Router accepts Tile field with components already placed
-routing.do_routing(tile_field, nets, component_instances)
+routing.do_cascade_routing(tile_field, nets, component_instances, cascades)
 
 print 'Writing RLE...'
 import os

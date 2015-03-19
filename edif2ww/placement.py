@@ -6,7 +6,7 @@
 import wireworld as ww
 import wireworld_lpm_tile6 as lpm
 
-def do_placement(instances, nets, input_port_instance_names):
+def do_cascade_placement(instances, nets, input_port_instance_names):
     ### divide instances into cascades
     fan_in_enable_counts = {} # holds the count of "enabled" in-edges for each vertex
     visited_vertices = {}
@@ -39,7 +39,7 @@ def do_placement(instances, nets, input_port_instance_names):
     
     tile_field = _place_cascades(instances, nets, cascades)
     
-    return tile_field
+    return (tile_field, cascades)
     
 def _get_adjacent(nets, instance_name):
     '''
@@ -81,8 +81,13 @@ def _place_cascades(instances, nets, cascades):
         random.shuffle(cascade)
         for inst_name in cascade:
             inst = instances[inst_name]
-            tile_field.place_component(row = offset_row, col = offset_col, component = inst)
-            inst.set_pos_in_tiles(row = offset_row, col = offset_col)
+
+            row = offset_row
+            col = offset_col
+            
+            tile_field.place_component(row = row, col = col, component = inst)
+            inst.set_pos_in_tiles(row = row, col = col)
+            
             offset_row += 9
             
         offset_col += 9
