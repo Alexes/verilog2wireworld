@@ -125,7 +125,8 @@ class TileLevelWireWorldUniverse:
         '''
         if (self._field[row][col] != ' '):
             #raise RuntimeError('Tile level of abstraction: wire drawn over something with label: ' + str(self._field[row][col]))
-            print 'Tile level of abstraction: wire drawn over something with label: ' + str(self._field[row][col])
+            #print 'Tile level of abstraction: wire drawn over something with label: ' + str(self._field[row][col])
+            pass
         self._field[row][col] = ('C', net_name)
           
     def write_cell_level_universe(self, instances_dict, nets_dict):
