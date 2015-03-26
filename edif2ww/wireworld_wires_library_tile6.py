@@ -196,11 +196,23 @@ class MODULE_PORT:
         else:
             return []
     
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return self.get_input_port_names()
+    
     def get_output_port_names(self):
         if (self._direction == 'INPUT'):
             return [self._port_name] # if this is INPUT module port, then its port is OUTPUT relative to the instance
         else:
             return []
+            
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return self.get_output_port_names()
             
 class DIRECTED_JUNCTION:
        
@@ -284,10 +296,238 @@ class DIRECTED_JUNCTION:
         
     def get_input_port_names(self):
         return ['Input']
-            
+    
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Input']
+    
     def get_fan_out_count(self):
         return 2
         
     def get_output_port_names(self):
         return ['Output0', 'Output1']
+            
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Output0', 'Output1']
+            
+class FEEDTHROUGH:
+       
+    _instance_name = ''
+    
+    _pattern = [
+        '      ',
+        '      ',
+        'CCCCCC',
+        'CCCCCC',
+        '      ',
+        '      '
+    ]
+    
+    _tile_pos_row = 0   # position of the current instance in tile-space
+    _tile_pos_col = 0
+    
+    def __init__(self, instance_name):
+        self._instance_name = instance_name
+    
+    def set_pos_in_tiles(self, row, col):
+        ''' 
+            Set position of the instance in tile space.
+            The position may be changed any number of times,
+            in case of multiple re-placement operations, for example.
+        '''
+        self._tile_pos_row = row
+        self._tile_pos_col = col
+    
+    def get_pos_in_tiles(self):
+        ''' 
+            Return position of the instance in tile space.
+            Returns tuple (row, col)
+        '''
+        return (self._tile_pos_row, self._tile_pos_col)
+    
+    def get_pattern(self):
+        return self._pattern
+        
+    def get_size_in_tiles(self):
+        ''' Tiles of size 6. Returns tuple (height, width) '''
+        return (1, 1)
+        
+    def get_size_in_cells(self):
+        ''' Returns tuple (height, width) '''
+        return (6, 6)
+        
+    def get_port_local_pos(self, port):
+        ''' 
+            Ports' locations are given in WW cell coordinate space inside gate pattern. 
+            Returns tuple (row, col), 0-based.
+        '''
+        if (port == 'Input'):
+            return (3, 0)
+        elif (port == 'Output'):
+            return (3, 5)
+            
+    def get_port_local_tile_pos(self, port):
+        ''' 
+            Ports' locations are given in 6-tiles coordinate space 
+            outside of the pattern.
+            This method returns not the position of the port inside the pattern,
+            but rather a location outside of it to which router
+            should bring a wire. This allows gates to designate
+            specific directions from which wires may connect to their ports.
+        '''
+        if (port == 'Input'):
+            return (0, -1)
+        elif (port == 'Output'):
+            return (0, 1)
+        
+            
+    def get_name(self):
+        return self._instance_name
+        
+    def get_fan_in_count(self):
+        return 1
+        
+    def get_input_port_names(self):
+        return ['Input']
+            
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Input']
+            
+    def get_fan_out_count(self):
+        return 1
+        
+    def get_output_port_names(self):
+        return ['Output']
+    
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Output']
+      
+class DIRECTED_BICHANNEL_CROSSING:
+       
+    _instance_name = ''
+    
+    _pattern = [
+        '                  ',
+        '                  ',
+        '        CC        ',
+        'C      C  C      C',
+        ' C   CC  CCCC   C ',
+        '  CCC    C  CCCC  ',
+        '     C   CCCC     ',
+        '    CCCC  C       ',
+        '    C  CCC        ',
+        'C   CCCC  C      C',
+        ' C   C   CCCC   C ',
+        '  CCC    C  CCCC  ',
+        '     CC  CCCC     ',
+        '       C  C       ',
+        '        CC        ',
+        '                  ',
+        '                  ',
+        '                  '
+    ]
+    
+    _tile_pos_row = 0   # position of the current instance in tile-space
+    _tile_pos_col = 0
+    
+    def __init__(self, instance_name):
+        self._instance_name = instance_name
+    
+    def set_pos_in_tiles(self, row, col):
+        ''' 
+            Set position of the instance in tile space.
+            The position may be changed any number of times,
+            in case of multiple re-placement operations, for example.
+        '''
+        self._tile_pos_row = row
+        self._tile_pos_col = col
+    
+    def get_pos_in_tiles(self):
+        ''' 
+            Return position of the instance in tile space.
+            Returns tuple (row, col)
+        '''
+        return (self._tile_pos_row, self._tile_pos_col)
+    
+    def get_pattern(self):
+        return self._pattern
+        
+    def get_size_in_tiles(self):
+        ''' Tiles of size 6. Returns tuple (height, width) '''
+        return (3, 3)
+        
+    def get_size_in_cells(self):
+        ''' Returns tuple (height, width) '''
+        return (18, 18)
+        
+    def get_port_local_pos(self, port):
+        ''' 
+            Ports' locations are given in WW cell coordinate space inside gate pattern. 
+            Returns tuple (row, col), 0-based.
+        '''
+        if (port == 'InputA'):
+            return (3, 0)
+        elif (port == 'OutputA'):
+            return (9, 17)
+        elif (port == 'InputB'):
+            return (9, 0)
+        elif (port == 'OutputB'):
+            return (3, 17)
+            
+    def get_port_local_tile_pos(self, port):
+        ''' 
+            Ports' locations are given in 6-tiles coordinate space 
+            outside of the pattern.
+            This method returns not the position of the port inside the pattern,
+            but rather a location outside of it to which router
+            should bring a wire. This allows gates to designate
+            specific directions from which wires may connect to their ports.
+        '''
+        if (port == 'InputA'):
+            return (0, -1)
+        elif (port == 'OutputA'):
+            return (1, 3)
+        elif (port == 'InputB'):
+            return (1, -1)
+        elif (port == 'OutputB'):
+            return (0, 3)
+        
+            
+    def get_name(self):
+        return self._instance_name
+        
+    def get_fan_in_count(self):
+        return 2
+        
+    def get_input_port_names(self):
+        return ['InputA', 'InputB']
+            
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['InputA', 'InputB']
+            
+    def get_fan_out_count(self):
+        return 2
+        
+    def get_output_port_names(self):
+        return ['OutputA', 'OutputB']
+        
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['OutputB', 'OutputA']
             
