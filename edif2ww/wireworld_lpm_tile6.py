@@ -98,10 +98,22 @@ class LPM_AND:
     def get_input_port_names(self):
         return ['Data0x0', 'Data1x0']
         
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Data0x0', 'Data1x0']
+        
     def get_fan_out_count(self):
         return 1
         
     def get_output_port_names(self):
+        return ['Result0']
+    
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
         return ['Result0']
     
 class LPM_OR:
@@ -198,12 +210,25 @@ class LPM_OR:
     def get_input_port_names(self):
         return ['Data0x0', 'Data1x0']
         
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Data0x0', 'Data1x0']
+        
     def get_fan_out_count(self):
         return 1
         
     def get_output_port_names(self):
         return ['Result0']
 
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Result0']
+        
+        
 class LPM_INV:
     _pattern = [
         '      ',
@@ -294,12 +319,24 @@ class LPM_INV:
     def get_input_port_names(self):
         return ['Data']
         
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Data']
+        
     def get_fan_out_count(self):
         return 1
         
     def get_output_port_names(self):
         return ['Result']
 
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Result']
+        
 class LPM_XOR:
     _pattern = [
         '            ',
@@ -393,9 +430,22 @@ class LPM_XOR:
         
     def get_input_port_names(self):
         return ['Data0x0', 'Data1x0']
-        
+      
+    def get_input_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Data0x0', 'Data1x0']
+      
     def get_fan_out_count(self):
         return 1
         
     def get_output_port_names(self):
         return ['Result0']
+    
+    def get_output_port_names_sorted(self):
+        '''
+            Returns port names sorted by position from top to bottom.
+        '''
+        return ['Result0']
+    
