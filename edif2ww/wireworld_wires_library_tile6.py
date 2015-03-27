@@ -219,6 +219,12 @@ class DIRECTED_JUNCTION:
     _instance_name = ''
     
     _pattern = [
+        '      ',
+        '      ',
+        '   CCC',
+        '  C   ',
+        '  C   ',
+        '  C   ',
         '   C  ',
         '   C  ',
         '   C  ',
@@ -254,11 +260,11 @@ class DIRECTED_JUNCTION:
         
     def get_size_in_tiles(self):
         ''' Tiles of size 6. Returns tuple (height, width) '''
-        return (1, 1)
+        return (2, 1)
         
     def get_size_in_cells(self):
         ''' Returns tuple (height, width) '''
-        return (6, 6)
+        return (12, 6)
         
     def get_port_local_pos(self, port):
         ''' 
@@ -266,11 +272,11 @@ class DIRECTED_JUNCTION:
             Returns tuple (row, col), 0-based.
         '''
         if (port == 'Input'):
-            return (3, 0)
+            return (9, 0)
         elif (port == 'Output0'):
-            return (0, 3)
+            return (2, 5)
         elif (port == 'Output1'):
-            return (3, 5)
+            return (9, 5)
             
     def get_port_local_tile_pos(self, port):
         ''' 
@@ -282,11 +288,11 @@ class DIRECTED_JUNCTION:
             specific directions from which wires may connect to their ports.
         '''
         if (port == 'Input'):
-            return (0, -1)
+            return (1, -1)
         elif (port == 'Output0'):
-            return (-1, 0)
-        elif (port == 'Output1'):
             return (0, 1)
+        elif (port == 'Output1'):
+            return (1, 1)
             
     def get_name(self):
         return self._instance_name
