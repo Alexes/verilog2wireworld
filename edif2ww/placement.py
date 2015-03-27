@@ -306,7 +306,8 @@ def _place_cascades(instances, nets, cascades):
             tile_field.place_component(row = row, col = col, component = inst)
             inst.set_pos_in_tiles(row = row, col = col)
             
-            offset_row += 9
+            inst_height = inst.get_size_in_tiles()[0]
+            offset_row += inst_height
             
         offset_col += 9
         offset_row = 9
