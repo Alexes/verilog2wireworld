@@ -1,4 +1,4 @@
-EDIF2Wireworld project.
+EDIF2Wireworld project (formerly Verilog2Wireworld).
 
 Utility that accepts a description of a digital circuit as a EDIF-netlist and performs Placement-and-Routing to "manufacture" the given circuit as a Wireworld cellular automaton pattern.
 The resulting pattern is functionally equivalent to the supplied digital circuit.
